@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to MP3 & Transcription</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles_modal.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Video Transcription & MP3 Converter</h1>
+            <div class="header-controls">
+                <button id="settingsBtn" class="settings-btn" title="Settings">⚙️ Settings</button>
+                <div class="theme-selector-container">
+                    <label for="themeSelect">Theme:</label>
+                    <select id="themeSelect" class="theme-dropdown">
+                        <option value="dark">Dark</option>
+                        <option value="violet">Violet</option>
+                        <option value="green-peace">Green Peace</option>
+                        <option value="ocean">Ocean Blue</option>
+                        <option value="sunset">Sunset Orange</option>
+                        <option value="forest">Forest Green</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Settings</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h3>🔑 API Keys</h3>
+                        <p class="settings-info">Your API keys are stored locally in .env file and never uploaded to GitHub.</p>
+                        
+                        <div class="setting-item">
+                            <label for="huggingfaceToken">
+                                <strong>Hugging Face Token</strong> (FREE - Required for speaker diarization)
+                                <a href="https://huggingface.co/settings/tokens" target="_blank" class="help-link">Get Token →</a>
+                            </label>
+                            <input type="password" id="huggingfaceToken" placeholder="hf_xxxxxxxxxxxxx">
+                            <small>Accept license at: <a href="https://huggingface.co/pyannote/speaker-diarization-3.1" target="_blank">pyannote/speaker-diarization-3.1</a></small>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="openaiKey">
+                                <strong>OpenAI API Key</strong> (Optional - For GPT models)
+                                <a href="https://platform.openai.com/api-keys" target="_blank" class="help-link">Get Key →</a>
+                            </label>
+                            <input type="password" id="openaiKey" placeholder="sk-xxxxxxxxxxxxx">
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="geminiKey">
+                                <strong>Google Gemini API Key</strong> (Optional - For Gemini models)
+                                <a href="https://makersuite.google.com/app/apikey" target="_blank" class="help-link">Get Key →</a>
+                            </label>
+                            <input type="password" id="geminiKey" placeholder="xxxxxxxxxxxxx">
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="claudeKey">
+                                <strong>Anthropic Claude API Key</strong> (Optional - For Claude models)
+                                <a href="https://console.anthropic.com/" target="_blank" class="help-link">Get Key →</a>
+                            </label>
+                            <input type="password" id="claudeKey" placeholder="sk-ant-xxxxxxxxxxxxx">
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>⚙️ Default Preferences</h3>
+                        
+                        <div class="setting-item">
+                            <label for="defaultWhisperModel"><strong>Default Whisper Model</strong></label>
+                            <select id="defaultWhisperModel" class="model-dropdown">
+                                <option value="tiny">Tiny - 39MB</option>
+                                <option value="base">Base - 74MB</option>
+                                <option value="small">Small - 244MB</option>
+                                <option value="medium" selected>Medium - 769MB</option>
+                                <option value="large">Large - 1.5GB</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="defaultFormat"><strong>Default Transcript Format</strong></label>
+                            <select id="defaultFormat" class="model-dropdown">
+                                <option value="txt">Text (.txt)</option>
+                                <option value="md">Markdown (.md)</option>
+                                <option value="both">Both (.txt + .md)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="defaultLLMProvider"><strong>Default LLM Provider</strong></label>
+                            <select id="defaultLLMProvider" class="model-dropdown">
+                                <option value="none">None (Disabled)</option>
+                                <option value="ollama">Ollama (Local)</option>
+                                <option value="openai">OpenAI</option>
+                                <option value="gemini">Google Gemini</option>
+                                <option value="claude">Anthropic Claude</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="defaultLLMTemplate"><strong>Default LLM Template</strong></label>
+                            <select id="defaultLLMTemplate" class="model-dropdown">
+                                <option value="clean">Clean - Remove filler words</option>
+                                <option value="summary">Summary - Concise overview</option>
+                                <option value="translate_en">Translate to English</option>
+                                <option value="translate_ja">Translate to Japanese</option>
+                                <option value="detailed">Detailed Analysis</option>
+                                <option value="meeting_notes">Meeting Notes</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <label for="mp3Bitrate"><strong>MP3 Audio Quality</strong></label>
+                            <select id="mp3Bitrate" class="model-dropdown">
+                                <option value="64k">64 kbps - Low (Voice only, ~28 MB/hour)</option>
+                                <option value="96k">96 kbps - Good (Speech, ~42 MB/hour)</option>
+                                <option value="128k" selected>128 kbps - High (Recommended, ~56 MB/hour)</option>
+                                <option value="192k">192 kbps - Very High (Music quality, ~84 MB/hour)</option>
+                                <option value="320k">320 kbps - Maximum (Studio quality, ~140 MB/hour)</option>
+                            </select>
+                            <small>Higher quality = larger file size. 128 kbps is perfect for transcription.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveSettingsBtn" class="btn-primary">💾 Save Settings</button>
+                    <button id="cancelSettingsBtn" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>🎛️ Model Configuration</h2>
+                </div>
+                <div class="model-config">
+                    <div class="model-selector">
+                        <label for="modelSelect">Whisper Model:</label>
+                        <select id="modelSelect" class="model-dropdown">
+                            <option value="tiny">Tiny - 39MB</option>
+                            <option value="base">Base - 74MB</option>
+                            <option value="small">Small - 244MB</option>
+                            <option value="medium" selected>Medium - 769MB (Recommended)</option>
+                            <option value="large">Large - 2.9GB</option>
+                        </select>
+                        <button id="verifyModelBtn" class="btn-verify" title="Check if model is downloaded">
+                            🔍 Verify Model
+                        </button>
+                        <button id="downloadModelBtn" class="btn-download" title="Download selected model">
+                            ⬇️ Download Model
+                        </button>
+                    </div>
+                    <div id="modelVerificationStatus" class="model-verification" style="display: none;">
+                        <span class="verification-icon"></span>
+                        <span class="verification-text"></span>
+                    </div>
+                    <div id="modelLocationInfo" class="model-location" style="display: none;">
+                        <strong>📁 Location:</strong> <code id="modelLocationPath"></code>
+                    </div>
+                    <div class="model-info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Size:</span>
+                                <span class="info-value" id="modelSize">769 MB</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">RAM:</span>
+                                <span class="info-value" id="modelRam">~5 GB</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Speed:</span>
+                                <span class="info-value" id="modelSpeed">Medium</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Accuracy:</span>
+                                <span class="info-value" id="modelAccuracy">High</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value status-ready" id="modelStatus">Ready</span>
+                            </div>
+                        </div>
+                        <div class="model-description" id="modelDescription">
+                            Recommended for Japanese/English mixed audio. Best balance of accuracy and speed.
+                        </div>
+                    </div>
+                    
+                    <div class="format-selector">
+                        <label for="transcriptFormat">Transcript Format:</label>
+                        <select id="transcriptFormat" class="model-dropdown">
+                            <option value="txt">Text (.txt)</option>
+                            <option value="md">Markdown (.md)</option>
+                            <option value="both">Both (.txt + .md)</option>
+                        </select>
+                        <div class="format-info">
+                            📝 Choose output format for transcripts. Markdown provides better formatting and readability.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>🧠 LLM Post-Processing (Optional)</h2>
+                </div>
+                <div class="llm-config">
+                    <div class="llm-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enableLLM">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label for="enableLLM" class="toggle-label">Enable LLM Enhancement</label>
+                    </div>
+                    
+                    <div id="llmOptions" class="llm-options" style="display: none;">
+                        <div class="llm-row">
+                            <div class="llm-field">
+                                <label for="llmProvider">Provider:</label>
+                                <select id="llmProvider" class="llm-dropdown">
+                                    <option value="ollama">Ollama (Local - Free)</option>
+                                    <option value="openai">OpenAI (GPT-4)</option>
+                                    <option value="gemini">Google Gemini Pro</option>
+                                    <option value="claude">Anthropic Claude</option>
+                                </select>
+                            </div>
+                            
+                            <div class="llm-field">
+                                <label for="llmTemplate">Template:</label>
+                                <select id="llmTemplate" class="llm-dropdown">
+                                    <option value="clean">Clean & Correct</option>
+                                    <option value="summary">Summary</option>
+                                    <option value="translate_en">Translate to English</option>
+                                    <option value="translate_ja">Translate to Japanese</option>
+                                    <option value="detailed">Detailed Analysis</option>
+                                    <option value="meeting_notes">Meeting Notes</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="llm-row">
+                            <div class="llm-field full-width">
+                                <label for="llmApiKey">API Key (leave empty for Ollama):</label>
+                                <input type="password" id="llmApiKey" class="llm-input" placeholder="Enter your API key...">
+                            </div>
+                        </div>
+                        
+                        <div class="llm-row">
+                            <div class="llm-field full-width">
+                                <label for="llmModel">Model (optional):</label>
+                                <input type="text" id="llmModel" class="llm-input" placeholder="e.g., gpt-4-turbo, gemini-pro, llama3...">
+                            </div>
+                        </div>
+                        
+                        <div class="llm-info-box">
+                            <strong>💡 Tip:</strong> For free local processing, install Ollama and run: <code>ollama pull llama3</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>📁 Input Folder</h2>
+                </div>
+                <div class="folder-selector">
+                    <button id="selectInputBtn" class="btn btn-primary">Select Video Folder</button>
+                    <div id="inputFolderPath" class="folder-path">No folder selected</div>
+                </div>
+                <div id="videoList" class="video-list"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>💾 Output Folder</h2>
+                </div>
+                <div class="folder-selector">
+                    <button id="selectOutputBtn" class="btn btn-primary">Select Output Folder</button>
+                    <div id="outputFolderPath" class="folder-path">No folder selected</div>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button id="processBtn" class="btn btn-success" disabled>
+                    <span class="btn-text">Start Processing</span>
+                </button>
+                <button id="stopBtn" class="btn btn-danger" style="display: none;">
+                    <span class="btn-text"> Stop Processing</span>
+                </button>
+            </div>
+
+            <div id="progressSection" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2> Processing Progress</h2>
+                </div>
+                <div class="progress-info">
+                    <div class="progress-stats">
+                        <span id="filesProcessed">0</span> / <span id="totalFiles">0</span> files processed
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                    <div id="progressText" class="progress-text">Ready to process</div>
+                </div>
+                <div id="logContainer" class="log-container">
+                    <div id="logOutput" class="log-output"></div>
+                </div>
+                
+                <div class="terminal-section">
+                    <div class="terminal-header">
+                        <span>📟 Terminal Output</span>
+                        <button id="clearTerminalBtn" class="btn-clear-terminal">Clear</button>
+                    </div>
+                    <div id="terminalOutput" class="terminal-output"></div>
+                </div>
+            </div>
+
+            <div class="section" id="searchSection" style="display: none;">
+                <div class="section-header">
+                    <h2> Search & Ask Questions</h2>
+                </div>
+                <div class="search-container">
+                    <div class="search-tabs">
+                        <button class="search-tab active" data-tab="keyword">Keyword Search</button>
+                        <button class="search-tab" data-tab="semantic">Semantic Search</button>
+                        <button class="search-tab" data-tab="chat">Ask Questions</button>
+                    </div>
+
+                    <div id="keywordTab" class="search-tab-content active">
+                        <div class="search-input-group">
+                            <input type="text" id="keywordInput" class="search-input" placeholder="Search for keywords...">
+                            <button id="keywordSearchBtn" class="btn btn-primary">Search</button>
+                        </div>
+                        <div class="search-options">
+                            <label>
+                                <input type="checkbox" id="caseSensitive">
+                                Case sensitive
+                            </label>
+                        </div>
+                        <div id="keywordResults" class="search-results"></div>
+                    </div>
+
+                    <div id="semanticTab" class="search-tab-content">
+                        <div class="search-input-group">
+                            <input type="text" id="semanticInput" class="search-input" placeholder="Describe what you're looking for...">
+                            <button id="semanticSearchBtn" class="btn btn-primary">Search</button>
+                        </div>
+                        <div class="search-info">
+                            💡 Semantic search finds content by meaning, not just exact words. Works across languages!
+                        </div>
+                        <div id="semanticResults" class="search-results"></div>
+                    </div>
+
+                    <div id="chatTab" class="search-tab-content">
+                        <div class="chat-container">
+                            <div id="chatMessages" class="chat-messages"></div>
+                            <div class="chat-input-group">
+                                <input type="text" id="chatInput" class="chat-input" placeholder="Ask a question about your transcripts...">
+                                <button id="chatSendBtn" class="btn btn-success">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

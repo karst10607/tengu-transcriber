@@ -1,0 +1,24 @@
+{
+  "name": "video-transcription-app",
+  "version": "1.0.0",
+  "description": "Electron app for batch video to MP3 and transcription conversion",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "keywords": [
+    "electron",
+    "video",
+    "transcription",
+    "mp3"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}

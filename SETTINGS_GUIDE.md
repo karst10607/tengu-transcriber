@@ -1,0 +1,211 @@
+# Settings & API Key Management Guide
+
+## 🔐 Secure API Key Storage
+
+Your app now includes a **Settings** feature that securely stores API keys and preferences locally in a `.env` file that is **never uploaded to GitHub**.
+
+## 📋 What's Protected
+
+The following files are automatically excluded from git (via `.gitignore`):
+- ✅ `.env` - Your actual API keys and settings
+- ✅ `venv/` - Python virtual environment
+- ✅ `node_modules/` - Node dependencies
+- ✅ Output files (MP3s, transcripts)
+
+**Safe to commit:**
+- ✅ `.env.example` - Template file (no actual keys)
+- ✅ All source code files
+
+## 🎯 How to Use Settings
+
+### 1. **Open Settings**
+Click the **⚙️ Settings** button in the top-right corner of the app.
+
+### 2. **Configure API Keys**
+
+#### **Hugging Face Token** (FREE - Required)
+- **Purpose:** Speaker diarization (identifies who's speaking)
+- **Cost:** FREE
+- **Get it:** https://huggingface.co/settings/tokens
+- **Important:** Accept the model license at https://huggingface.co/pyannote/speaker-diarization-3.1
+
+#### **OpenAI API Key** (Optional)
+- **Purpose:** LLM post-processing with GPT models
+- **Cost:** Pay-as-you-go (~$0.15/1M tokens for GPT-4o-mini)
+- **Get it:** https://platform.openai.com/api-keys
+- **Models:** GPT-4o, GPT-4o-mini, GPT-4-turbo, GPT-3.5-turbo
+
+#### **Google Gemini API Key** (Optional)
+- **Purpose:** LLM post-processing with Gemini models
+- **Cost:** Free tier available
+- **Get it:** https://makersuite.google.com/app/apikey
+
+#### **Anthropic Claude API Key** (Optional)
+- **Purpose:** LLM post-processing with Claude models
+- **Cost:** Pay-as-you-go
+- **Get it:** https://console.anthropic.com/
+
+### 3. **Set Default Preferences**
+
+- **Default Whisper Model:** Choose your preferred model (tiny to large)
+- **Default Transcript Format:** Text, Markdown, or Both
+- **Default LLM Provider:** Pre-select your preferred LLM
+- **Default LLM Template:** Pre-select your preferred template
+
+### 4. **Save Settings**
+Click **💾 Save Settings** to store your configuration.
+
+---
+
+## 🔒 Security Features
+
+### Local Storage Only
+- API keys are stored in `.env` file on your computer
+- **Never** transmitted over the internet (except when calling APIs)
+- **Never** uploaded to GitHub (protected by `.gitignore`)
+
+### Password Fields
+- API keys are displayed as password fields (hidden by default)
+- Copy-paste works normally
+
+### Environment Variables
+- Settings are loaded as environment variables
+- Available to Python backend for processing
+
+---
+
+## 📁 File Structure
+
+```
+your-project/
+├── .env                    # ❌ NOT in git (your actual keys)
+├── .env.example            # ✅ In git (template only)
+├── .gitignore              # ✅ Protects sensitive files
+├── settings_manager.js     # Settings management logic
+└── ...
+```
+
+---
+
+## 🚀 For GitHub Upload
+
+### Before Uploading to GitHub:
+
+1. **Check `.gitignore` exists** ✅ (Already created)
+2. **Verify `.env` is excluded:**
+   ```bash
+   git status
+   # .env should NOT appear in the list
+   ```
+
+3. **Include `.env.example`:**
+   ```bash
+   git add .env.example
+   ```
+
+4. **First-time setup for others:**
+   Others who clone your repo should:
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   
+   # Edit .env and add their own API keys
+   nano .env
+   ```
+
+---
+
+## 🎓 Speaker Diarization Clarification
+
+### Does NOT Require LLM ❌
+
+**Speaker diarization** (identifying who's speaking) uses:
+- ✅ **pyannote.audio** - Specialized audio AI model
+- ✅ **Hugging Face Token** - FREE authentication
+- ❌ **NO LLM needed**
+
+**How it works:**
+1. Analyzes audio waveforms
+2. Detects voice characteristics
+3. Segments by speaker
+4. Labels as SPEAKER_00, SPEAKER_01, etc.
+
+### What LLM Is For ✅
+
+LLM is **only** for **optional post-processing**:
+- Cleaning transcripts (remove filler words)
+- Summarizing content
+- Translating languages
+- Detailed analysis
+- Meeting notes formatting
+
+---
+
+## 💰 Cost Breakdown
+
+| Feature | Service | Cost |
+|---------|---------|------|
+| **Transcription** | Whisper (local) | FREE |
+| **Speaker ID** | Hugging Face + pyannote | FREE |
+| **Semantic Search** | Sentence Transformers | FREE |
+| **LLM (Optional)** | Ollama (local) | FREE |
+| **LLM (Optional)** | GPT-4o-mini | ~$0.0015 per hour of transcript |
+| **LLM (Optional)** | GPT-4o | ~$0.025 per hour of transcript |
+| **LLM (Optional)** | Gemini | Free tier available |
+
+---
+
+## 🛠️ Troubleshooting
+
+### Settings Not Saving
+- Check file permissions in project directory
+- Ensure app has write access
+
+### API Keys Not Working
+- Verify keys are correct (no extra spaces)
+- Check API key is active on provider's website
+- For Hugging Face: Accept model license
+
+### .env File Missing
+- App will create it automatically when you save settings
+- You can manually create it from `.env.example`
+
+---
+
+## 📝 Example .env File
+
+```bash
+# API Keys Configuration
+# Auto-generated by the app - DO NOT commit to git
+
+# Hugging Face Token (FREE - required for speaker diarization)
+HUGGINGFACE_TOKEN=hf_xxxxxxxxxxxxxxxxxxxxx
+
+# OpenAI API Key (Optional - for LLM post-processing)
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxx
+
+# Google Gemini API Key (Optional - for LLM post-processing)
+GOOGLE_API_KEY=xxxxxxxxxxxxxxxxxxxxx
+
+# Anthropic Claude API Key (Optional - for LLM post-processing)
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxx
+
+# Default Settings
+DEFAULT_LLM_PROVIDER=none
+DEFAULT_LLM_MODEL=
+DEFAULT_LLM_TEMPLATE=clean
+DEFAULT_WHISPER_MODEL=medium
+DEFAULT_TRANSCRIPT_FORMAT=txt
+```
+
+---
+
+## ✅ Summary
+
+- ✅ Settings button in header
+- ✅ Secure local storage (.env file)
+- ✅ Protected from GitHub upload
+- ✅ Easy API key management
+- ✅ Default preferences
+- ✅ Speaker diarization does NOT need LLM
+- ✅ LLM is optional for post-processing only

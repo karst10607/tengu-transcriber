@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Model cache (optional - uncomment if you don't want to track models)
+# models/
+# .cache/
+
+# User data
+output/
+*.mp3
+*_transcript.txt
+*_transcript.md
+*_enhanced.txt
+*_enhanced.md
